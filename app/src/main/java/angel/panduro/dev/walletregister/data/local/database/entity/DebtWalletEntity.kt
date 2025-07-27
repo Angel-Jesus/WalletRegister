@@ -25,7 +25,7 @@ data class DebtWalletEntity(
     @ColumnInfo(name = "name_card") val nameCard: String,
     @ColumnInfo(name = "type_money") val typeMoney: String,
     @ColumnInfo(name = "debt") val debt: Float,
-    @ColumnInfo(name = "type") val type: String,
+    @ColumnInfo(name = "category") val category: String,
     @ColumnInfo(name = "quote_paid") val quotePaid: Int = 0,
     @ColumnInfo(name = "quotas") val quotas: Int,
     @ColumnInfo(name = "is_paid") val isPaid: Int,

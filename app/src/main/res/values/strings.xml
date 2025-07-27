@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">WalletRegister</string>
+    <string name="home_title_top_bar">Home</string>
+    <string name="debt_title_top_bar">Deudas</string>
+    <string name="statistic_title_top_bar">Estadistica</string>
+
+    <string name="title_acount_home">Lista de cuentas</string>
+    <string name="title_balance">Saldo Actual</string>
+    <string name="subtitle_credit_line_used">Linea utilizada</string>
+    <string name="subtitle_credit_line_available">Linea disponible</string>
+
 </resources>

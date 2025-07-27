@@ -14,7 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletNavigatorDrawer
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation.getEnableGesturesForRoute
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation.getSectionForRoute
-import angel.panduro.dev.walletregister.presentation.ui.screen.HomeScreen
+import angel.panduro.dev.walletregister.presentation.ui.screen.home.HomeScreen
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @Composable
@@ -38,7 +39,10 @@ fun NavManager(){
                 startDestination = ItemNavScreen.HomeScreen
             ){
                 composable<ItemNavScreen.HomeScreen> {
-                    HomeScreen()
+                    HomeScreen(
+                        onDisplayDrawer = { scope.launch { drawerState.open() } },
+                        onAddCard = {  }
+                    )
                 }
             }
         }

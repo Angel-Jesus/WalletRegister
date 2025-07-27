@@ -34,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation
-import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerColorDark
+import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.DrawerItemSelectedColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.DrawerItemStyle
-import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBar
+import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBarColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -55,7 +55,7 @@ fun WalletNavigatorDrawer(
         ModalNavigationDrawer(
             drawerContent = {
                 ModalDrawerSheet(
-                    drawerContainerColor = GreenTopBar,
+                    drawerContainerColor = GreenTopBarColor,
                     drawerShape = RoundedCornerShape(0.dp)
                 ){
                     WalletTitle(modifier = Modifier.fillMaxWidth())
@@ -85,7 +85,7 @@ private fun WalletTitle(
 ) {
     Box(
         modifier = modifier
-            .background(GreenTopBar),
+            .background(GreenTopBarColor),
         contentAlignment = Alignment.CenterStart
     ) {
         Row(modifier = Modifier
@@ -120,7 +120,7 @@ private fun WalletContent(
 ){
     Column(
         modifier = modifier
-            .background(ContainerColorDark)
+            .background(ContainerDarkColor)
             .padding(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {

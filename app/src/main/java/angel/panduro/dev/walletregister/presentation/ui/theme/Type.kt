@@ -36,6 +36,7 @@ val Typography = Typography(
 )
 
 val notoSansFamily = FontFamily(fonts = listOf(Font(R.font.noto_sans_jp_regular)))
+val notoSansMediumFamily = FontFamily(fonts = listOf(Font(R.font.noto_sans_jp_medium)))
 val notoSansBoldFamily = FontFamily(fonts = listOf(Font(R.font.noto_sans_jp_bold)))
 
 val TitleStyle = TextStyle(
@@ -45,5 +46,30 @@ val TitleStyle = TextStyle(
 
 val DrawerItemStyle = TextStyle(
     fontFamily = notoSansFamily,
+    fontSize = 14.sp
+)
+
+val subtitleSmallStyle = TextStyle(
+    fontFamily = notoSansMediumFamily,
+    fontSize = 12.sp
+)
+
+val subtitleRegularStyle = TextStyle(
+    fontFamily = notoSansMediumFamily,
+    fontSize = 14.sp
+)
+
+val subtitleMediumStyle = TextStyle(
+    fontFamily = notoSansMediumFamily,
+    fontSize = 20.sp
+)
+
+val DescriptionStyle = TextStyle(
+    fontFamily = notoSansFamily,
+    fontSize = 12.sp
+)
+
+val BalanceStyle = TextStyle(
+    fontFamily = notoSansBoldFamily,
     fontSize = 14.sp
 )
