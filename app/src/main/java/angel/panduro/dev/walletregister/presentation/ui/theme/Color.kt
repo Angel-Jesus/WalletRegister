@@ -1,4 +1,4 @@
-package angel.panduro.dev.walletregister.ui.theme
+package angel.panduro.dev.walletregister.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
