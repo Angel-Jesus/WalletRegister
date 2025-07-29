@@ -7,7 +7,7 @@ import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.ui.navigation.DescriptionMenu.DEBT
 import angel.panduro.dev.walletregister.presentation.ui.navigation.DescriptionMenu.HOME
 import angel.panduro.dev.walletregister.presentation.ui.navigation.DescriptionMenu.STATISTICS
-import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen.AddCardScreen
+import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen.CardSectionScreen
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen.DebtScreen
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen.HomeScreen
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen.StatisticsScreen
@@ -44,7 +44,7 @@ object ItemNavigation {
     fun getSectionForRoute(route: String?): Int {
         if (route == null) return 0
         return when(route){
-            HomeScreen::class.qualifiedName, AddCardScreen::class.qualifiedName -> 0
+            HomeScreen::class.qualifiedName, CardSectionScreen::class.qualifiedName -> 0
             DebtScreen::class.qualifiedName  -> 1
             StatisticsScreen::class.qualifiedName  -> 2
             else -> 0

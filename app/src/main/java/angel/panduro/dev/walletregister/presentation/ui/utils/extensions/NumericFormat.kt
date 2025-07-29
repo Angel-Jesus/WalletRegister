@@ -6,7 +6,7 @@ import angel.panduro.dev.walletregister.presentation.ui.utils.constance.FormatNu
 fun String.formatNumber(format: String = FORMAT_WITH_COMA): String {
     val safeNumber = this.replace(Regex("[^\\d.]"), "")
     if(safeNumber.isBlank()) return "0.00"
-    return DecimalFormat(format).format(safeNumber)
+    return DecimalFormat(format).format(safeNumber.toFloat())
 }
 
 fun Float.formatNumber(format: String = FORMAT_WITH_COMA): String {

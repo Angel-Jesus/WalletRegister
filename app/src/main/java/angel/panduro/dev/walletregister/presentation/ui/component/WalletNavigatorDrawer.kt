@@ -36,7 +36,7 @@ import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.DrawerItemSelectedColor
-import angel.panduro.dev.walletregister.presentation.ui.theme.DrawerItemStyle
+import angel.panduro.dev.walletregister.presentation.ui.theme.LabelStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBarColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
 import kotlinx.coroutines.CoroutineScope
@@ -131,7 +131,7 @@ private fun WalletContent(
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
                         text = item.title,
-                        style = DrawerItemStyle,
+                        style = LabelStyle,
                         color = Color.White
                     )
                 },

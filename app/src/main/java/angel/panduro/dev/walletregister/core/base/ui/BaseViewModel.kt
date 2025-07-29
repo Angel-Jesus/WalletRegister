@@ -1,9 +1,8 @@
 package angel.panduro.dev.walletregister.core.base.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import angel.panduro.dev.walletregister.core.base.either.EitherWallet.Error
-import angel.panduro.dev.walletregister.core.base.either.EitherWallet.Sucess
 import angel.panduro.dev.walletregister.core.base.error.Failure
 import angel.panduro.dev.walletregister.core.base.extension.collectEither
 import angel.panduro.dev.walletregister.core.base.usecase.BaseFlowUseCase
@@ -56,7 +55,7 @@ abstract class BaseViewModel<S: BaseUiState, E: BaseEvent, F: BaseEffect>(
         useCase: BaseUseCase<Params, Result>,
         params: Params,
         onSucess: suspend (Result) -> Unit,
-        onError: suspend (Failure) -> Unit
+        onError: suspend (Failure) -> Unit = { printError(it) }
     ){
         viewModelScope.launch {
             useCase.execute(params).collectEither(
@@ -69,22 +68,25 @@ abstract class BaseViewModel<S: BaseUiState, E: BaseEvent, F: BaseEffect>(
     // Execute UseCase with Job
     protected fun <Params, Result> executeJobUseCase(
         useCase: BaseFlowUseCase<Params, Result>,
-        params: Params,
-        onSucess: suspend (Result) -> Unit,
-        onError: suspend (Failure) -> Unit
+        params: Params? = null,
+        onResult: suspend (Result) -> Unit,
     ): Job{
         return useCase.execute(params)
             .onEach { result ->
-                when(result){
-                    is Sucess -> onSucess(result.value)
-                    is Error -> onError(result.value)
-                }
+                onResult(result)
             }.launchIn(viewModelScope)
+    }
+
+    private fun printError(failure: Failure){
+        when(failure){
+            is Failure.DatabaseFailure -> Log.e("Error", "DatabaseFailure ${failure.message}")
+            is Failure.MapperFailure -> Log.e("Error", "MapperFailure ${failure.exception?.message}")
+            is Failure.UnkownFailure -> Log.e("Error", "UnkownFailure ${failure.message}")
+        }
     }
 
     // Cancel ViewModelScope
     protected fun clearScope(){
         viewModelScope.cancel()
     }
-
 }

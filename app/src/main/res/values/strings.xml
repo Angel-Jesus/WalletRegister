@@ -4,9 +4,18 @@
     <string name="debt_title_top_bar">Deudas</string>
     <string name="statistic_title_top_bar">Estadistica</string>
 
+    <!-- Home -->
     <string name="title_acount_home">Lista de cuentas</string>
     <string name="title_balance">Saldo Actual</string>
     <string name="subtitle_credit_line_used">Linea utilizada</string>
     <string name="subtitle_credit_line_available">Linea disponible</string>
+    <string name="subtitle_debts">Estructura de deuda</string>
+    <string name="title_add_card">Añadir cuenta</string>
+    <string name="credit_crd_name">Nombre de la cuenta</string>
+    <string name="credit_line_value">Linea de credito</string>
+    <string name="money_type">Tipo de moneda</string>
+    <string name="payment_due_date">Fecha de vencimiento del pago</string>
+    <string name="closing_date">Fecha de cierre</string>
+    <string name="credit_card_color">Color</string>
 
 </resources>

@@ -44,22 +44,27 @@ val TitleStyle = TextStyle(
     fontSize = 16.sp
 )
 
-val DrawerItemStyle = TextStyle(
+val LabelStyle = TextStyle(
     fontFamily = notoSansFamily,
     fontSize = 14.sp
 )
 
-val subtitleSmallStyle = TextStyle(
+val SubtitleSmallStyle = TextStyle(
     fontFamily = notoSansMediumFamily,
     fontSize = 12.sp
 )
 
-val subtitleRegularStyle = TextStyle(
+val SubtitleRegularStyle = TextStyle(
     fontFamily = notoSansMediumFamily,
     fontSize = 14.sp
 )
 
-val subtitleMediumStyle = TextStyle(
+val SubtitleXStyle = TextStyle(
+    fontFamily = notoSansMediumFamily,
+    fontSize = 16.sp
+)
+
+val SubtitleMediumStyle = TextStyle(
     fontFamily = notoSansMediumFamily,
     fontSize = 20.sp
 )

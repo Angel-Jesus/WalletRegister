@@ -30,3 +30,13 @@ val GreenTopBarColor = Color(0xFF0D1D38)
 val ContainerDarkColor = Color(0xFF1B1B1B)
 val ContainerLightColor = Color(0xFFF6F6F6)
 val ContainerBlockColor = Color(0xFF2C2C2C)
+
+// CardWalletList
+val CardWalletList = listOf(
+    Color(0xFF1B7777),
+    Color(0xFF30D9E0),
+    Color(0xFFEFB8C8),
+    Color(0xFF6650a4),
+    Color(0xFF625b71),
+    Color(0xFF7D5260)
+)

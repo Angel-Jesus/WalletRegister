@@ -13,5 +13,5 @@ sealed class ItemNavScreen {
 
     // Option Screen
     @Serializable
-    data object AddCardScreen: ItemNavScreen()
+    data object CardSectionScreen: ItemNavScreen()
 }

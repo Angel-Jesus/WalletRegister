@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "card_wallet_table")
 data class CardWalletEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Int = 0,
+    @ColumnInfo(name = "id") val id: Long = 0,
     @ColumnInfo(name = "name_card") val nameCard: String,
     @ColumnInfo(name = "credit_line_card") val creditLineCard: String,
     @ColumnInfo(name = "type_money") val typeMoney: String,

@@ -20,14 +20,14 @@ import androidx.room.PrimaryKey
 )
 data class DebtWalletEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Int = 0,
-    @ColumnInfo(name = "id_wallet") val idWallet: Int,
+    @ColumnInfo(name = "id") val id: Long = 0,
+    @ColumnInfo(name = "id_wallet") val idWallet: Long,
     @ColumnInfo(name = "name_card") val nameCard: String,
     @ColumnInfo(name = "type_money") val typeMoney: String,
     @ColumnInfo(name = "debt") val debt: Float,
     @ColumnInfo(name = "category") val category: String,
     @ColumnInfo(name = "quote_paid") val quotePaid: Int = 0,
-    @ColumnInfo(name = "quotas") val quotas: Int,
+    @ColumnInfo(name = "quotas") val quotas: Int = 1,
     @ColumnInfo(name = "is_paid") val isPaid: Int,
     @ColumnInfo(name = "date") val date: Long,
     @ColumnInfo(name = "date_expired") val dateExpired: Long

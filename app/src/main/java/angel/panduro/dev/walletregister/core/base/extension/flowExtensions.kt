@@ -11,7 +11,7 @@ suspend fun <T> Flow<EitherWallet<Failure, T>>.collectEither(
     this.collect { result ->
         when(result){
             is EitherWallet.Error -> onError(result.value)
-            is EitherWallet.Sucess -> onSuccess(result.value)
+            is EitherWallet.Success -> onSuccess(result.value)
         }
     }
 }
