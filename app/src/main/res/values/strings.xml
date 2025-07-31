@@ -17,5 +17,9 @@
     <string name="payment_due_date">Fecha de vencimiento del pago</string>
     <string name="closing_date">Fecha de cierre</string>
     <string name="credit_card_color">Color</string>
+    <string name="setting_card_title">Configuración de tarjeta</string>
+    <string name="question_setting_card">¿Que acción desea realizar?</string>
+    <string name="delete_card_button">Eliminar tarjeta</string>
+    <string name="edit_card_button">Editar tarjeta</string>
 
 </resources>

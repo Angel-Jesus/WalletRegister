@@ -1,5 +1,6 @@
 package angel.panduro.dev.walletregister.presentation.ui.navigation
 
+import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY
 import kotlinx.serialization.Serializable
 
 sealed class ItemNavScreen {
@@ -13,5 +14,5 @@ sealed class ItemNavScreen {
 
     // Option Screen
     @Serializable
-    data object CardSectionScreen: ItemNavScreen()
+    data class CardSectionScreen(val cardInformation: String): ItemNavScreen()
 }

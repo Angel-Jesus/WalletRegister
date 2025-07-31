@@ -1,5 +1,8 @@
 package angel.panduro.dev.walletregister.presentation.ui.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CardInformation(
     val id: Long = 0,
     val nameCard: String,

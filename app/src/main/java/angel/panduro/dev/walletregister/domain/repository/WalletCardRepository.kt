@@ -7,5 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface WalletCardRepository {
     suspend fun saveCard(cardInformation: CardInformationDto): EitherWallet<Failure, Unit>
+    suspend fun deleteCard(idCard: Long): EitherWallet<Failure, Unit>
     fun getAllCards(): Flow<List<CardInformationDto>>
+
 }

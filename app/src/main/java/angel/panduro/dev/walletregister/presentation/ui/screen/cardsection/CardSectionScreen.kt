@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEffect
+import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEvent
 import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEvent.ColorChanged
 import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEvent.InputChanged
 import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEvent.SaveCard
@@ -45,6 +46,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CardSectionScreen(
     cardSectionViewModel: CardSectionViewModel = koinViewModel<CardSectionViewModel>(),
+    cardInformation: String,
     onBack: () -> Unit
 ){
     val scope = rememberCoroutineScope()
@@ -52,10 +54,14 @@ fun CardSectionScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        cardSectionViewModel.uiEffect.collectLatest {effect ->
+        if(cardInformation.isNotEmpty()){
+            cardSectionViewModel.onEvent(CardSectionEvent.InitCardInformation(cardInformation))
+        }
+
+        cardSectionViewModel.uiEffect.collectLatest { effect ->
             when(effect){
                 CardSectionEffect.MissingFields -> scope.launch { snackbarHostState.showSnackbar("Para guardar la tarjeta debe llenar todos los campos correctamente") }
-                CardSectionEffect.SuccessSaveCard -> onBack
+                CardSectionEffect.SuccessSaveCard -> onBack()
             }
         }
     }

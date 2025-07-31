@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletNavigatorDrawer
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation.getEnableGesturesForRoute
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation.getSectionForRoute
@@ -42,13 +43,15 @@ fun NavManager(){
                 composable<ItemNavScreen.HomeScreen> {
                     HomeScreen(
                         onDisplayDrawer = { scope.launch { drawerState.open() } },
-                        onAddCard = { navController.navigate(ItemNavScreen.CardSectionScreen) }
+                        onSettingCard = { navController.navigate(ItemNavScreen.CardSectionScreen(it)) }
                     )
                 }
 
                 composable<ItemNavScreen.CardSectionScreen> {
+                    val arg = it.toRoute<ItemNavScreen.CardSectionScreen>()
                     CardSectionScreen(
-                        onBack = { navController.popBackStack() }
+                        cardInformation = arg.cardInformation,
+                        onBack = { navController.navigate(ItemNavScreen.HomeScreen) }
                     )
                 }
             }

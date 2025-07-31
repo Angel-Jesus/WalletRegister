@@ -4,6 +4,11 @@ import angel.panduro.dev.walletregister.core.base.ui.BaseEvent
 
 sealed class HomeEvent: BaseEvent {
     data object GetAllCards: HomeEvent()
+    data class ChangeCardSelected(val idCard: Long): HomeEvent()
     data class GetCreditLineUsed(val cardId: Long): HomeEvent()
     data class GetDebtResume(val cardId: Long): HomeEvent()
+    data class EditCard(val cardId: Long): HomeEvent()
+    data class DeleteCard(val cardId: Long): HomeEvent()
+    data class ShowModal(val temporalIdCard: Long): HomeEvent()
+    data object HideModal: HomeEvent()
 }

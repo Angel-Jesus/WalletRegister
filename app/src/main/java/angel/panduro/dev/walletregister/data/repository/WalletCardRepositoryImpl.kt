@@ -18,6 +18,10 @@ class WalletCardRepositoryImpl(
         return safeBaseRoom { cardsWalletDao.insertCardsWallet(cardInformation.toEntity()) }
     }
 
+    override suspend fun deleteCard(idCard: Long): EitherWallet<Failure, Unit> {
+        return safeBaseRoom { cardsWalletDao.deleteCard(idCard) }
+    }
+
     override fun getAllCards(): Flow<List<CardInformationDto>> {
         return cardsWalletDao.getFlowCardsWallet().map { it.toDto() }
     }

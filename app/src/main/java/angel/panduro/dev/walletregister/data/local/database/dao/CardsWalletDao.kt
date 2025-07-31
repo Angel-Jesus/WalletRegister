@@ -23,6 +23,6 @@ interface CardsWalletDao {
     suspend fun updateCard(card: CardWalletEntity)
 
     @Query("DELETE FROM card_wallet_table WHERE id = :id")
-    suspend fun deleteCard(id: Int)
+    suspend fun deleteCard(id: Long)
 
 }

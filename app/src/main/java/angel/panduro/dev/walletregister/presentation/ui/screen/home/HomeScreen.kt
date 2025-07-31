@@ -2,7 +2,7 @@ package angel.panduro.dev.walletregister.presentation.ui.screen.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -19,11 +19,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.*
+import angel.panduro.dev.walletregister.presentation.ui.component.WalletModal
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletPieChart
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletTopAppBar
 import angel.panduro.dev.walletregister.presentation.ui.model.CardInformation
@@ -48,31 +52,54 @@ import angel.panduro.dev.walletregister.presentation.ui.theme.DescriptionStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleMediumStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleRegularStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleSmallStyle
+import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_ID
 import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.formatNumber
 import angel.panduro.dev.walletregister.presentation.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = koinViewModel<HomeViewModel>(),
     onDisplayDrawer: () -> Unit,
-    onAddCard: () -> Unit
+    onSettingCard: (String) -> Unit
 ){
+    val sheetState = rememberModalBottomSheetState()
     val uiState by homeViewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        homeViewModel.onEvent(HomeEvent.GetAllCards)
+        homeViewModel.onEvent(GetAllCards)
 
         homeViewModel.uiEffect.collect{ effect ->
             when(effect){
-                HomeEffect.GetAllInformationByCard -> {
-                    homeViewModel.onEvent(HomeEvent.GetCreditLineUsed(uiState.idCardSelected))
-                    homeViewModel.onEvent(HomeEvent.GetDebtResume(uiState.idCardSelected))
+                is HomeEffect.GetAllInformationByCard -> {
+                    homeViewModel.onEvent(GetCreditLineUsed(uiState.idCardSelected))
+                    homeViewModel.onEvent(GetDebtResume(uiState.idCardSelected))
                 }
+
+                is HomeEffect.OnSettingCard -> onSettingCard(effect.cardInformationJson)
             }
         }
     }
+    if(uiState.showModal){
+        WalletModal(
+            sheetState = sheetState,
+            title = stringResource(R.string.setting_card_title),
+            description = stringResource(R.string.question_setting_card),
+            textPositive = stringResource(R.string.edit_card_button),
+            textNegative = stringResource(R.string.delete_card_button),
+            onPositiveClick = {
+                homeViewModel.onEvent(EditCard(uiState.temporalIdCard))
+            },
+            onNegativeClick = {
+                homeViewModel.onEvent(DeleteCard(uiState.temporalIdCard))
+            },
+            onDismiss = { homeViewModel.onEvent(HideModal) }
+        )
+    }
+
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -95,7 +122,9 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxWidth(),
                     cards = uiState.cards,
                     idCardSelected = uiState.idCardSelected,
-                    onAddCard = onAddCard
+                    onCardSelected = { idCard ->  homeViewModel.onEvent(ChangeCardSelected(idCard))},
+                    onCardLongClick = { idCard -> homeViewModel.onEvent(ShowModal(idCard)) },
+                    onAddCard = { onSettingCard(String.EMPTY) }
                 )
             }
 
@@ -122,6 +151,8 @@ private fun CardsSection(
     modifier: Modifier = Modifier,
     idCardSelected: Long,
     cards: List<CardInformation> = emptyList(),
+    onCardSelected: (Long) -> Unit = {},
+    onCardLongClick: (Long) -> Unit = {},
     onAddCard: () -> Unit = {},
 ){
     Column(
@@ -160,14 +191,18 @@ private fun CardsSection(
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             maxItemsInEachRow = 2
         ) {
             cards.forEach{ cardWallet ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth(0.5f)
-                        .clickable(onClick = { }),
+                        .padding(horizontal = 4.dp)
+                        .combinedClickable(
+                            onClick = { onCardSelected(cardWallet.id) },
+                            onLongClick = { onCardLongClick(cardWallet.id) }
+                        ),
                     colors = CardDefaults.cardColors(
                         containerColor = Color(cardWallet.colorCard)
                     ),
@@ -190,6 +225,8 @@ private fun CardsSection(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 
 }

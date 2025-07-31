@@ -1,5 +1,6 @@
 package angel.panduro.dev.walletregister.presentation.viewmodel
 
+import android.util.Log
 import angel.panduro.dev.walletregister.core.base.ui.BaseViewModel
 import angel.panduro.dev.walletregister.domain.model.CardInformationModel
 import angel.panduro.dev.walletregister.domain.usecases.SaveCreditCardSafeUseCase
@@ -9,6 +10,8 @@ import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSe
 import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEvent
 import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionUiState
 import angel.panduro.dev.walletregister.presentation.ui.enums.CardInformationEnum
+import angel.panduro.dev.walletregister.presentation.ui.model.CardInformation
+import kotlinx.serialization.json.Json
 
 class CardSectionViewModel(
     private val saveCreditCardUseCase: SaveCreditCardSafeUseCase
@@ -19,6 +22,21 @@ class CardSectionViewModel(
             is CardSectionEvent.ColorChanged -> colorChanged(event.value)
             is CardSectionEvent.InputChanged -> inputChanged(event.type, event.value)
             is CardSectionEvent.SaveCard -> saveCard()
+            is CardSectionEvent.InitCardInformation -> initCardInformation(event.cardInformationJson)
+        }
+    }
+
+    private fun initCardInformation(cardInformationJson: String){
+        val cardInformation = Json.decodeFromString<CardInformation>(cardInformationJson)
+        updateState {
+            copy(
+                creditCardName = cardInformation.nameCard,
+                creditLineValue = cardInformation.creditLineCard,
+                moneyType = cardInformation.typeMoney,
+                paymentDueDate = cardInformation.paidDateExpired.toString(),
+                closingDate = cardInformation.dateClose.toString(),
+                colorCard = cardInformation.colorCard
+            )
         }
     }
 
@@ -54,13 +72,13 @@ class CardSectionViewModel(
                     )
                 ),
                 onSucess = {
+                    Log.d("onSucessSaveCard", "SendEffect SuccessSaveCard")
                     sendEffect(SuccessSaveCard)
                 }
             )
-            return
+        } else{
+            sendEffect(MissingFields)
         }
-
-        sendEffect(MissingFields)
     }
 
     private fun CardSectionUiState.validateFields(): Boolean {
