@@ -8,7 +8,7 @@ data class DebtInformationDto(
     val debt: Float,
     val category: String,
     val quotePaid: Int,
-    val quotas: Int,
+    val quote: Int,
     val isPaid: Int,
     val date: Long,
     val dateExpired: Long

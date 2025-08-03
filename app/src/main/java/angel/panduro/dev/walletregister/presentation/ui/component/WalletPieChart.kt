@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import angel.panduro.dev.walletregister.presentation.ui.model.CategoryInformation
 import angel.panduro.dev.walletregister.presentation.ui.theme.DescriptionStyle
-import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleXStyle
+import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleXRegularStyle
 import angel.panduro.dev.walletregister.presentation.ui.utils.constance.FormatNumber.FORMAT_WITH_TWO_DECIMAL
 import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.formatNumber
 import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.sumOfFloat
@@ -43,7 +43,7 @@ import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.sumOfFl
 fun WalletPieChart(
     modifier: Modifier = Modifier,
     data: Map<String, CategoryInformation>,
-    color: Color = Color.Unspecified,
+    color: Color = Color.White,
     radiusOuter: Dp = 80.dp,
     chartBarWidth: Dp = 35.dp,
     animDuration: Int = 1000
@@ -85,7 +85,7 @@ fun WalletPieChart(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -97,12 +97,12 @@ fun WalletPieChart(
             Text(
                 text = "Deuda Total:\n${data.values.firstOrNull()?.typeMoney.orEmpty()} ${totalSum.formatNumber(FORMAT_WITH_TWO_DECIMAL)}",
                 textAlign = TextAlign.Center,
-                style = SubtitleXStyle,
+                style = SubtitleXRegularStyle,
                 color = color
             )
 
             Canvas(
-                modifier = modifier
+                modifier = Modifier
                     .offset { IntOffset.Zero }
                     .size(radiusOuter * 2f)
                     .rotate(animateRotation)

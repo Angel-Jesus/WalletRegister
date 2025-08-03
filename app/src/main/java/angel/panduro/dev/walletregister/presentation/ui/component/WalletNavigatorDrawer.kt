@@ -32,12 +32,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import angel.panduro.dev.walletregister.R
+import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DrawerOptionEnum
 import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavScreen
-import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.DrawerItemSelectedColor
-import angel.panduro.dev.walletregister.presentation.ui.theme.LabelStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBarColor
+import angel.panduro.dev.walletregister.presentation.ui.theme.LabelStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -47,7 +47,7 @@ fun WalletNavigatorDrawer(
     scope: CoroutineScope,
     enableGestures: Boolean = true,
     drawerState: DrawerState = rememberDrawerState(initialValue = DrawerValue.Open),
-    onItemClick: (ItemNavScreen) -> Unit = {},
+    onItemClick: (prevScreen: ItemNavScreen, newScreen: ItemNavScreen) -> Unit = {_,_ ->},
     itemSelected: Int = 0,
     content: @Composable () -> Unit
 ){
@@ -62,11 +62,11 @@ fun WalletNavigatorDrawer(
                     WalletContent(
                         modifier = Modifier.fillMaxSize(),
                         itemSelected = itemSelected,
-                        onItemClick = {
+                        onItemClick = { prevScreen, newScreen ->
                             scope.launch {
                                 drawerState.close()
                             }
-                            onItemClick(it)
+                            onItemClick(prevScreen, newScreen)
                         }
                     )
                 }
@@ -116,7 +116,7 @@ private fun WalletTitle(
 private fun WalletContent(
     modifier: Modifier = Modifier,
     itemSelected: Int = 0,
-    onItemClick: (ItemNavScreen) -> Unit = {}
+    onItemClick: (prevScreen: ItemNavScreen, newScreen: ItemNavScreen) -> Unit = {_,_ -> }
 ){
     Column(
         modifier = modifier
@@ -124,7 +124,7 @@ private fun WalletContent(
             .padding(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        ItemNavigation.sections.forEachIndexed { index, item ->
+        DrawerOptionEnum.sections.forEachIndexed { index, item ->
             NavigationDrawerItem(
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                 label = {
@@ -137,7 +137,10 @@ private fun WalletContent(
                 },
                 selected = index == itemSelected,
                 onClick = {
-                    onItemClick(item.route)
+                    if(index != itemSelected){
+                        val prevScreen = DrawerOptionEnum.sections[itemSelected]
+                        onItemClick(prevScreen.route, item.route)
+                    }
                 },
                 icon = {
                     Icon(
@@ -159,15 +162,3 @@ private fun WalletContent(
         }
     }
 }
-
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun WalletNavigatorDrawerPreview() {
-    WalletNavigatorDrawer(){
-        Box {
-
-        }
-    }
-}*/

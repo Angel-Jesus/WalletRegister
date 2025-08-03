@@ -6,10 +6,10 @@ data class DebtInformation(
     val nameCard: String,
     val typeMoney: String,
     val debt: Float,
-    val type: String,
+    val category: String,
     val quotePaid: Int = 0,
-    val quotas: Int,
+    val quote: Int,
     val isPaid: Int,
-    val date: Long,
-    val dateExpired: Long
+    val date: String,
+    val dateExpired: String
 )

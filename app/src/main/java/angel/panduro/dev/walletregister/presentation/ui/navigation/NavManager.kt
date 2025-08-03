@@ -13,9 +13,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletNavigatorDrawer
-import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation.getEnableGesturesForRoute
-import angel.panduro.dev.walletregister.presentation.ui.navigation.ItemNavigation.getSectionForRoute
-import angel.panduro.dev.walletregister.presentation.ui.screen.cardsection.CardSectionScreen
+import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DrawerOptionEnum.Companion.getEnableGesturesForRoute
+import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DrawerOptionEnum.Companion.getSectionForRoute
+import angel.panduro.dev.walletregister.presentation.ui.screen.add_debt.AddDebtScreen
+import angel.panduro.dev.walletregister.presentation.ui.screen.card_section.CardSectionScreen
+import angel.panduro.dev.walletregister.presentation.ui.screen.debt.DebtScreen
 import angel.panduro.dev.walletregister.presentation.ui.screen.home.HomeScreen
 import kotlinx.coroutines.launch
 
@@ -31,8 +33,10 @@ fun NavManager(){
         scope = scope,
         enableGestures = getEnableGesturesForRoute(navBackStackEntry?.destination?.route),
         drawerState = drawerState,
-        onItemClick = {
-            navController.navigate(it)
+        onItemClick = {prevScreen, newScreen ->
+            navController.navigate(newScreen){
+                popUpTo(prevScreen){ inclusive = true }
+            }
         },
         itemSelected = getSectionForRoute(navBackStackEntry?.destination?.route),
         content = {
@@ -43,7 +47,11 @@ fun NavManager(){
                 composable<ItemNavScreen.HomeScreen> {
                     HomeScreen(
                         onDisplayDrawer = { scope.launch { drawerState.open() } },
-                        onSettingCard = { navController.navigate(ItemNavScreen.CardSectionScreen(it)) }
+                        onSettingCard = {
+                            navController.navigate(ItemNavScreen.CardSectionScreen(it)){
+                                popUpTo(ItemNavScreen.HomeScreen) { inclusive = true }
+                            }
+                        }
                     )
                 }
 
@@ -52,6 +60,25 @@ fun NavManager(){
                     CardSectionScreen(
                         cardInformation = arg.cardInformation,
                         onBack = { navController.navigate(ItemNavScreen.HomeScreen) }
+                    )
+                }
+
+                composable<ItemNavScreen.DebtScreen> {
+                    DebtScreen(
+                        onDisplayDrawer = { scope.launch { drawerState.open() } },
+                        onAddDebt = { idCard ->
+                            navController.navigate(ItemNavScreen.AddDebtScreen(idCard)){
+                                popUpTo(ItemNavScreen.DebtScreen) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+
+                composable<ItemNavScreen.AddDebtScreen> {
+                    val arg = it.toRoute<ItemNavScreen.AddDebtScreen>()
+                    AddDebtScreen(
+                        idCard = arg.idCard,
+                        onBack = { navController.navigate(ItemNavScreen.DebtScreen) }
                     )
                 }
             }

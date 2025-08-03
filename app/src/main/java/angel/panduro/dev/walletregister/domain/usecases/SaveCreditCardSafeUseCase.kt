@@ -1,7 +1,5 @@
 package angel.panduro.dev.walletregister.domain.usecases
 
-import angel.panduro.dev.walletregister.core.base.either.EitherWallet
-import angel.panduro.dev.walletregister.core.base.error.Failure
 import angel.panduro.dev.walletregister.core.base.usecase.BaseUseCase
 import angel.panduro.dev.walletregister.domain.mapper.toDto
 import angel.panduro.dev.walletregister.domain.model.CardInformationModel
@@ -14,7 +12,7 @@ class SaveCreditCardSafeUseCase(
         val cardInformation: CardInformationModel
     )
 
-    override suspend fun run(params: Params): EitherWallet<Failure, Unit> {
+    override suspend fun run(params: Params) {
         return walletCardRepository.saveCard(params.cardInformation.toDto())
     }
 }

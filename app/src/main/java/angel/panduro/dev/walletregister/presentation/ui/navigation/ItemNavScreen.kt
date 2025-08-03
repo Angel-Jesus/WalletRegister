@@ -15,4 +15,6 @@ sealed class ItemNavScreen {
     // Option Screen
     @Serializable
     data class CardSectionScreen(val cardInformation: String): ItemNavScreen()
+    @Serializable
+    data class AddDebtScreen(val idCard: Long): ItemNavScreen()
 }

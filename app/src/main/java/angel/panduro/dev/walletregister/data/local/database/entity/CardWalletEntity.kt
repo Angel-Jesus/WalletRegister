@@ -11,7 +11,7 @@ data class CardWalletEntity(
     @ColumnInfo(name = "name_card") val nameCard: String,
     @ColumnInfo(name = "credit_line_card") val creditLineCard: String,
     @ColumnInfo(name = "type_money") val typeMoney: String,
-    @ColumnInfo(name = "paid_date_expired") val paidDateExpired: Int,
-    @ColumnInfo(name = "date_close") val dateClose: Int,
+    @ColumnInfo(name = "paid_day_expired") val paidDayExpired: Int,
+    @ColumnInfo(name = "day_close") val dayClose: Int,
     @ColumnInfo(name = "color_card") val colorCard: String
 )

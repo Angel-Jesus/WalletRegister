@@ -8,8 +8,8 @@ fun CardInformationModel.toDto(): CardInformationDto = CardInformationDto(
     nameCard = nameCard,
     creditLineCard = creditLineCard,
     typeMoney = typeMoney,
-    paidDateExpired = paidDateExpired,
-    dateClose = dateClose,
+    paidDayExpired = paidDateExpired,
+    dayClose = dateClose,
     colorCard = colorCard
 )
 
@@ -18,8 +18,8 @@ fun CardInformationDto.toModel(): CardInformationModel = CardInformationModel(
     nameCard = nameCard,
     creditLineCard = creditLineCard,
     typeMoney = typeMoney,
-    paidDateExpired = paidDateExpired,
-    dateClose = dateClose,
+    paidDateExpired = paidDayExpired,
+    dateClose = dayClose,
     colorCard = colorCard
 )
 

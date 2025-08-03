@@ -14,10 +14,13 @@ interface CardsWalletDao {
     fun getFlowCardsWallet(): Flow<List<CardWalletEntity>>
 
     @Query("SELECT * FROM card_wallet_table")
-    fun getCardsWallet(): List<CardWalletEntity>
+    suspend fun getCardsWallet(): List<CardWalletEntity>
+
+    @Query("SELECT * FROM card_wallet_table WHERE id = :id")
+    suspend fun getCardWallet(id: Long): CardWalletEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertCardsWallet(card: CardWalletEntity)
+    suspend fun insertCardsWallet(card: CardWalletEntity)
 
     @Update
     suspend fun updateCard(card: CardWalletEntity)

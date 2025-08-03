@@ -5,7 +5,7 @@ data class CardInformationDto(
     val nameCard: String,
     val creditLineCard: String,
     val typeMoney: String,
-    val paidDateExpired: Int,
-    val dateClose: Int,
+    val paidDayExpired: Int,
+    val dayClose: Int,
     val colorCard: ULong
 )

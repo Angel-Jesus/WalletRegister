@@ -39,13 +39,22 @@ val notoSansFamily = FontFamily(fonts = listOf(Font(R.font.noto_sans_jp_regular)
 val notoSansMediumFamily = FontFamily(fonts = listOf(Font(R.font.noto_sans_jp_medium)))
 val notoSansBoldFamily = FontFamily(fonts = listOf(Font(R.font.noto_sans_jp_bold)))
 
+val EmptyTitleStyle = TextStyle(
+    fontFamily = notoSansBoldFamily,
+    fontSize = 25.sp
+)
+
+val TitleTopAppBarStyle = TextStyle(
+    fontFamily = notoSansBoldFamily,
+    fontSize = 20.sp
+)
 val TitleStyle = TextStyle(
     fontFamily = notoSansBoldFamily,
     fontSize = 16.sp
 )
 
-val LabelStyle = TextStyle(
-    fontFamily = notoSansFamily,
+val BalanceStyle = TextStyle(
+    fontFamily = notoSansBoldFamily,
     fontSize = 14.sp
 )
 
@@ -59,12 +68,16 @@ val SubtitleRegularStyle = TextStyle(
     fontSize = 14.sp
 )
 
-val SubtitleXStyle = TextStyle(
+val SubtitleXRegularStyle = TextStyle(
     fontFamily = notoSansMediumFamily,
     fontSize = 16.sp
 )
 
 val SubtitleMediumStyle = TextStyle(
+    fontFamily = notoSansMediumFamily,
+    fontSize = 18.sp
+)
+val SubtitleLargeStyle = TextStyle(
     fontFamily = notoSansMediumFamily,
     fontSize = 20.sp
 )
@@ -73,8 +86,12 @@ val DescriptionStyle = TextStyle(
     fontFamily = notoSansFamily,
     fontSize = 12.sp
 )
-
-val BalanceStyle = TextStyle(
-    fontFamily = notoSansBoldFamily,
+val LabelStyle = TextStyle(
+    fontFamily = notoSansFamily,
     fontSize = 14.sp
+)
+
+val LabelXStyle = TextStyle(
+    fontFamily = notoSansFamily,
+    fontSize = 16.sp
 )

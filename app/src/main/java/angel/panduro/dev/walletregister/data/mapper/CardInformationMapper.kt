@@ -8,8 +8,8 @@ fun CardInformationDto.toEntity(): CardWalletEntity = CardWalletEntity(
     nameCard = nameCard,
     creditLineCard = creditLineCard,
     typeMoney = typeMoney,
-    paidDateExpired = paidDateExpired,
-    dateClose = dateClose,
+    paidDayExpired = paidDayExpired,
+    dayClose = dayClose,
     colorCard = colorCard.toString()
 )
 
@@ -18,8 +18,8 @@ fun CardWalletEntity.toDto(): CardInformationDto = CardInformationDto(
     nameCard = nameCard,
     creditLineCard = creditLineCard,
     typeMoney = typeMoney,
-    paidDateExpired = paidDateExpired,
-    dateClose = dateClose,
+    paidDayExpired = paidDayExpired,
+    dayClose = dayClose,
     colorCard = colorCard.toULong()
 )
 

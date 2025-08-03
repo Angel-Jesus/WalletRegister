@@ -2,9 +2,11 @@ package angel.panduro.dev.walletregister.presentation.viewmodel
 
 import angel.panduro.dev.walletregister.core.base.ui.BaseViewModel
 import angel.panduro.dev.walletregister.domain.usecases.DeleteCardUseCase
-import angel.panduro.dev.walletregister.domain.usecases.GetAllCardsUseCase
+import angel.panduro.dev.walletregister.domain.usecases.GetAllCardsFlowUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetBalanceWalletUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineCardUseCase
+import angel.panduro.dev.walletregister.domain.usecases.GetIdCardByPreferenceUseCase
+import angel.panduro.dev.walletregister.domain.usecases.SaveIdCardByPreferencesUseCase
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect.*
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent
@@ -17,18 +19,20 @@ import kotlinx.serialization.json.Json
 class HomeViewModel(
     private val getCreditLineCardUsedUseCase: GetCreditLineCardUseCase,
     private val getBalanceWalletUseCase: GetBalanceWalletUseCase,
-    private val getAllCardsUseCase: GetAllCardsUseCase,
-    private val deleteCardUseCase: DeleteCardUseCase
+    private val getAllCardsUseCase: GetAllCardsFlowUseCase,
+    private val deleteCardUseCase: DeleteCardUseCase,
+    private val getIdCardByPreferenceUseCase: GetIdCardByPreferenceUseCase,
+    private val saveIdCardByPreferencesUseCase: SaveIdCardByPreferencesUseCase
 ): BaseViewModel<HomeUiState, HomeEvent, HomeEffect>(HomeUiState()) {
 
-    var getCardJob: Job? = null
+    private var getCardJob: Job? = null
 
     override fun onEvent(event: HomeEvent) {
         when(event){
-            is HomeEvent.GetAllCards -> getAllCards()
+            is HomeEvent.GetAllCards -> getIdCardByPreferences()
             is HomeEvent.GetCreditLineUsed -> getCreditLineUsed(event.cardId)
             is HomeEvent.GetDebtResume -> getDebtResume(event.cardId)
-            is HomeEvent.ChangeCardSelected -> changeCardSelected(event.idCard)
+            is HomeEvent.ChangeCardSelected -> updateIdCardSelected(event.idCard)
             is HomeEvent.DeleteCard -> deleteCard(event.cardId)
             is HomeEvent.HideModal -> updateState { copy(showModal = false, temporalIdCard = Long.EMPTY_ID) }
             is HomeEvent.ShowModal -> updateState { copy(showModal = true, temporalIdCard = event.temporalIdCard) }
@@ -49,24 +53,19 @@ class HomeViewModel(
         executeUseCase(
             useCase = deleteCardUseCase,
             params = DeleteCardUseCase.Params(cardId),
-            onSucess = {
+            onResult = {
                 updateState { copy(showModal = false, temporalIdCard = Long.EMPTY_ID) }
             }
         )
     }
-    private fun changeCardSelected(idCard: Long){
-        updateState {
-            copy(idCardSelected = idCard)
-        }
-
-        sendEffect(GetAllInformationByCard)
-    }
 
     private fun getCreditLineUsed(cardId: Long){
+        if(cardId == Long.EMPTY_ID) return
+
         executeUseCase(
             useCase = getCreditLineCardUsedUseCase,
             params = GetCreditLineCardUseCase.Params(cardId),
-            onSucess = {creditLineUsed ->
+            onResult = {creditLineUsed ->
                 updateState {
                     copy(creditLineUsed = creditLineUsed)
                 }
@@ -75,10 +74,12 @@ class HomeViewModel(
     }
 
     private fun getDebtResume(cardId: Long){
+        if(cardId == Long.EMPTY_ID) return
+
         executeUseCase(
             useCase = getBalanceWalletUseCase,
             params = GetBalanceWalletUseCase.Params(cardId),
-            onSucess = { debtByCategory ->
+            onResult = { debtByCategory ->
                 updateState {
                     copy(totalDebtByType = debtByCategory)
                 }
@@ -86,23 +87,50 @@ class HomeViewModel(
         )
     }
 
-    private fun getAllCards(){
+    private fun getIdCardByPreferences(){
+        executeUseCase(
+            useCase = getIdCardByPreferenceUseCase,
+            params = Unit,
+            onResult = { idCard ->
+                getAllCards(idCard)
+            }
+        )
+    }
+
+    private fun getAllCards(idCard: Long) {
+        var isInit = true
         getCardJob?.cancel()
         getCardJob = executeJobUseCase(
             useCase = getAllCardsUseCase,
-            onResult = { cardInformation ->
-                val idCardExits = cardInformation.any { it.id == uiState.value.idCardSelected }
-                val idCardSelected = uiState.value.idCardSelected.takeIf { idCardExits } ?: (cardInformation.firstOrNull()?.id ?: Long.EMPTY_ID)
-                updateState {
-                    copy(
-                        idCardSelected = idCardSelected,
-                        cards = cardInformation.toUi()
-                    )
+            params = Unit,
+            onResult = { cardsInformation ->
+                if(isInit){
+                    isInit = false
+                    val idCardExisted = cardsInformation.any { it.id == idCard }
+                    val idCardSelected = idCard.takeIf { idCardExisted } ?: (cardsInformation.firstOrNull()?.id ?: Long.EMPTY_ID)
+                    updateState { copy(cards = cardsInformation.toUi()) }
+                    updateIdCardSelected(idCardSelected)
+                } else{
+                    if(cardsInformation.isEmpty()){
+                        updateState { copy(cards = emptyList(), idCardSelected = Long.EMPTY_ID, totalDebtByType = emptyMap()) }
+                        updateIdCardSelected(Long.EMPTY_ID)
+                    } else {
+                        updateState { copy(cards = cardsInformation.toUi()) }
+                        val idCardExisted = cardsInformation.any { it.id == uiState.value.idCardSelected }
+                        if(!idCardExisted) updateIdCardSelected(cardsInformation.first().id)
+                    }
                 }
+            }
+        )
+    }
 
-                if(idCardSelected != Long.EMPTY_ID) {
-                    sendEffect(GetAllInformationByCard)
-                }
+    private fun updateIdCardSelected(idCard: Long){
+        executeUseCase(
+            useCase = saveIdCardByPreferencesUseCase,
+            params = SaveIdCardByPreferencesUseCase.Params(idCard),
+            onResult = {
+                updateState { copy(idCardSelected = idCard) }
+                sendEffect(GetAllInformationByCard)
             }
         )
     }

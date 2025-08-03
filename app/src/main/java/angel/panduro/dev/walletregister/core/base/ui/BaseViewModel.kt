@@ -1,10 +1,7 @@
 package angel.panduro.dev.walletregister.core.base.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import angel.panduro.dev.walletregister.core.base.error.Failure
-import angel.panduro.dev.walletregister.core.base.extension.collectEither
 import angel.panduro.dev.walletregister.core.base.usecase.BaseFlowUseCase
 import angel.panduro.dev.walletregister.core.base.usecase.BaseUseCase
 import kotlinx.coroutines.Job
@@ -54,35 +51,23 @@ abstract class BaseViewModel<S: BaseUiState, E: BaseEvent, F: BaseEffect>(
     protected fun <Params, Result> executeUseCase(
         useCase: BaseUseCase<Params, Result>,
         params: Params,
-        onSucess: suspend (Result) -> Unit,
-        onError: suspend (Failure) -> Unit = { printError(it) }
+        onResult: suspend (Result) -> Unit = {},
     ){
         viewModelScope.launch {
-            useCase.execute(params).collectEither(
-                onSuccess = onSucess,
-                onError = onError
-            )
+            onResult(useCase.execute(params))
         }
     }
 
     // Execute UseCase with Job
     protected fun <Params, Result> executeJobUseCase(
         useCase: BaseFlowUseCase<Params, Result>,
-        params: Params? = null,
+        params: Params,
         onResult: suspend (Result) -> Unit,
     ): Job{
         return useCase.execute(params)
             .onEach { result ->
                 onResult(result)
             }.launchIn(viewModelScope)
-    }
-
-    private fun printError(failure: Failure){
-        when(failure){
-            is Failure.DatabaseFailure -> Log.e("Error", "DatabaseFailure ${failure.message}")
-            is Failure.MapperFailure -> Log.e("Error", "MapperFailure ${failure.exception?.message}")
-            is Failure.UnkownFailure -> Log.e("Error", "UnkownFailure ${failure.message}")
-        }
     }
 
     // Cancel ViewModelScope

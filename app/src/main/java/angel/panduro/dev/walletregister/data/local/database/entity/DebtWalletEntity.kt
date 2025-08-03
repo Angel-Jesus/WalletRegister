@@ -27,7 +27,7 @@ data class DebtWalletEntity(
     @ColumnInfo(name = "debt") val debt: Float,
     @ColumnInfo(name = "category") val category: String,
     @ColumnInfo(name = "quote_paid") val quotePaid: Int = 0,
-    @ColumnInfo(name = "quotas") val quotas: Int = 1,
+    @ColumnInfo(name = "quotas") val quote: Int = 1,
     @ColumnInfo(name = "is_paid") val isPaid: Int,
     @ColumnInfo(name = "date") val date: Long,
     @ColumnInfo(name = "date_expired") val dateExpired: Long

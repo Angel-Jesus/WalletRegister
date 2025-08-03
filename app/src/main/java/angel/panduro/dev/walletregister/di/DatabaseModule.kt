@@ -9,10 +9,10 @@ import org.koin.dsl.module
 val databaseModule = module {
     single<WalletDatabase> {
         Room.databaseBuilder(
-            get(),
-            WalletDatabase::class.java,
-            "wallet_database"
-        ).build()
+                get(),
+                WalletDatabase::class.java,
+                "wallet_database"
+            ).build()
     }
 
     single<CardsWalletDao> {

@@ -1,16 +1,16 @@
 package angel.panduro.dev.walletregister.presentation.viewmodel
 
-import android.util.Log
 import angel.panduro.dev.walletregister.core.base.ui.BaseViewModel
 import angel.panduro.dev.walletregister.domain.model.CardInformationModel
 import angel.panduro.dev.walletregister.domain.usecases.SaveCreditCardSafeUseCase
-import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEffect
-import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEffect.MissingFields
-import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEffect.SuccessSaveCard
-import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionEvent
-import angel.panduro.dev.walletregister.presentation.contract.cardsection.CardSectionUiState
-import angel.panduro.dev.walletregister.presentation.ui.enums.CardInformationEnum
+import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEffect
+import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEffect.MissingFields
+import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEffect.SuccessSaveCard
+import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEvent
+import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionUiState
 import angel.panduro.dev.walletregister.presentation.ui.model.CardInformation
+import angel.panduro.dev.walletregister.presentation.ui.utils.enums.CardInformationEnum
+import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.toSafeInt
 import kotlinx.serialization.json.Json
 
 class CardSectionViewModel(
@@ -33,8 +33,8 @@ class CardSectionViewModel(
                 creditCardName = cardInformation.nameCard,
                 creditLineValue = cardInformation.creditLineCard,
                 moneyType = cardInformation.typeMoney,
-                paymentDueDate = cardInformation.paidDateExpired.toString(),
-                closingDate = cardInformation.dateClose.toString(),
+                paymentDueDay = cardInformation.paidDateExpired.toString(),
+                closingDay = cardInformation.dateClose.toString(),
                 colorCard = cardInformation.colorCard
             )
         }
@@ -45,8 +45,8 @@ class CardSectionViewModel(
             CardInformationEnum.CREDIT_CARD_NAME -> updateState { copy(creditCardName = value) }
             CardInformationEnum.CREDIT_LINE_VALUE -> updateState { copy(creditLineValue = value) }
             CardInformationEnum.MONEY_TYPE -> updateState { copy(moneyType = value) }
-            CardInformationEnum.PAYMENT_DUE_DATE -> updateState { copy(paymentDueDate = value) }
-            CardInformationEnum.CLOSING_DATE -> updateState { copy(closingDate = value) }
+            CardInformationEnum.PAYMENT_DUE_DATE -> updateState { copy(paymentDueDay = value) }
+            CardInformationEnum.CLOSING_DATE -> updateState { copy(closingDay = value) }
         }
     }
 
@@ -66,13 +66,12 @@ class CardSectionViewModel(
                         nameCard = uiState.value.creditCardName,
                         creditLineCard = uiState.value.creditLineValue,
                         typeMoney = uiState.value.moneyType,
-                        paidDateExpired = uiState.value.paymentDueDate.toInt(),
-                        dateClose = uiState.value.closingDate.toInt(),
+                        paidDateExpired = uiState.value.paymentDueDay.toSafeInt(),
+                        dateClose = uiState.value.closingDay.toSafeInt(),
                         colorCard = uiState.value.colorCard,
                     )
                 ),
-                onSucess = {
-                    Log.d("onSucessSaveCard", "SendEffect SuccessSaveCard")
+                onResult = {
                     sendEffect(SuccessSaveCard)
                 }
             )
@@ -82,9 +81,9 @@ class CardSectionViewModel(
     }
 
     private fun CardSectionUiState.validateFields(): Boolean {
-        if((paymentDueDate.toIntOrNull() ?: 0) < 1) return false
-        if((closingDate.toIntOrNull() ?: 0) < 1) return false
-        if((creditLineValue.toIntOrNull() ?: 0) < 1) return false
+        if(paymentDueDay.toSafeInt() < 1) return false
+        if(closingDay.toSafeInt() < 1) return false
+        if(creditLineValue.toSafeInt() < 1) return false
         return creditCardName.isNotBlank() && moneyType.isNotBlank()
     }
 }

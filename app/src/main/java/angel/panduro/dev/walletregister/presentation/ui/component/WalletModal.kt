@@ -2,6 +2,7 @@ package angel.panduro.dev.walletregister.presentation.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -33,22 +35,24 @@ fun WalletModal(
     title: String,
     description: String? = null,
     textPositive: String,
-    textNegative: String,
+    textNegative: String? = null,
     onPositiveClick: () -> Unit,
-    onNegativeClick: () -> Unit,
+    onNegativeClick: () -> Unit = {},
     onDismiss: () -> Unit
 ){
     ModalBottomSheet(
-        onDismissRequest = { onDismiss },
+        onDismissRequest = { onDismiss() },
         sheetState = sheetState,
     ) {
         Column(modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
             icon?.let {
-                Image(
-                    modifier = Modifier.size(48.dp),
-                    painter = painterResource(id = icon),
-                    contentDescription = "iconModal"
-                )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Image(
+                        modifier = Modifier.size(54.dp),
+                        painter = painterResource(id = icon),
+                        contentDescription = "iconModal"
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -87,20 +91,22 @@ fun WalletModal(
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
+            textNegative?.let {
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
-                ),
-                onClick = onNegativeClick
-            ){
-                Text(
-                    text = textNegative,
-                    style = SubtitleRegularStyle
-                )
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Red,
+                        contentColor = Color.White
+                    ),
+                    onClick = onNegativeClick
+                ){
+                    Text(
+                        text = textNegative,
+                        style = SubtitleRegularStyle
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(8.dp))

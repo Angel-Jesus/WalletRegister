@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBarColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
+import angel.panduro.dev.walletregister.presentation.ui.theme.TitleTopAppBarStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,7 +24,7 @@ fun WalletTopAppBar(
         title = {
             Text(
                 text = titleTopBar,
-                style = TitleStyle
+                style = TitleTopAppBarStyle
             )
         },
         navigationIcon = {

@@ -38,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect
-import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.*
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletModal
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletPieChart
@@ -49,7 +48,7 @@ import angel.panduro.dev.walletregister.presentation.ui.theme.BalanceStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerBlockColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.DescriptionStyle
-import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleMediumStyle
+import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleLargeStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleRegularStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleSmallStyle
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY
@@ -259,7 +258,7 @@ private fun CurrentBalanceCard(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = card.nameCard,
-                style = SubtitleMediumStyle,
+                style = SubtitleLargeStyle,
                 color = Color.White,
                 textAlign = TextAlign.Center
             )
@@ -346,7 +345,7 @@ private fun DebtsSection(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            WalletPieChart(data = debts)
+            WalletPieChart(modifier = Modifier.fillMaxWidth(), data = debts)
 
             Spacer(modifier = Modifier.height(16.dp))
         }

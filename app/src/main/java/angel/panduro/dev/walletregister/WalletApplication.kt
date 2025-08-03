@@ -2,6 +2,7 @@ package angel.panduro.dev.walletregister
 
 import android.app.Application
 import angel.panduro.dev.walletregister.di.databaseModule
+import angel.panduro.dev.walletregister.di.preferencesModule
 import angel.panduro.dev.walletregister.di.repositoryModule
 import angel.panduro.dev.walletregister.di.useCaseModule
 import angel.panduro.dev.walletregister.di.viewModelModule
@@ -13,7 +14,7 @@ class WalletApplication: Application() {
         super.onCreate()
         startKoin {
             androidContext(this@WalletApplication)
-            modules(viewModelModule, useCaseModule, repositoryModule, databaseModule)
+            modules(viewModelModule, useCaseModule, repositoryModule, preferencesModule, databaseModule)
         }
     }
 }

@@ -22,4 +22,22 @@
     <string name="delete_card_button">Eliminar tarjeta</string>
     <string name="edit_card_button">Editar tarjeta</string>
 
+    <!-- Debt -->
+    <string name="title_debt_not_paid">Deudas pendientes</string>
+    <string name="title_debt_paid">Historial</string>
+    <string name="empty_title_debt">Nada registrado</string>
+    <string name="description_debt">No tiene deudas registradas</string>
+    <string name="description_debt_paid">No tiene deudas pagadas registradas</string>
+    <string name="title_option_debt_modal">Pago de cuotas</string>
+    <string name="title_option_debt_paid_modal">Eliminar registro</string>
+    <string name="description_debt_paid_option_modal">Recuerda que una vez eliminado no podra recuperarlo</string>
+    <string name="description_debt_option_modal">Si la cuota es solo una se habrá pagado toda la deuda, en caso contrario, solo se registrará el pago de una cuota</string>
+    <string name="text_paid_option_modal">Pagar cuota</string>
+    <string name="text_delete_option_modal">Eliminar registro</string>
+    <string name="acount_list_add_debt">Cuenta</string>
+    <string name="amount_add_debt">Monto</string>
+    <string name="quote_add_debt">Cuotas</string>
+    <string name="category_add_debt">Categorias</string>
+    <string name="title_add_debt">Añadir deuda</string>
+
 </resources>
