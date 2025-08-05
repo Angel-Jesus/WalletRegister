@@ -43,7 +43,11 @@ val CardWalletList = listOf(
 
 // Icon Color
 val WalletIconColor = Color(0xFF038F8F)
+val ErrorIconColor = Color(0xFFFF0000)
 
 // State Color
 val NotPaidStateColor = Color(0xFFB9333C)
 val PaidStateColor = Color(0xFF008F80)
+
+// Text Color
+val ErrorTextColor = Color(0xFFFF0000)

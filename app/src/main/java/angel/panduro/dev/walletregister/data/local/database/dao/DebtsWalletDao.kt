@@ -19,7 +19,7 @@ interface DebtsWalletDao {
     @Query("SELECT COALESCE(SUM(CASE WHEN quotas > 1 THEN debt/quotas ELSE debt END), 0) AS total_debt FROM debt_wallet_table WHERE id_wallet = :idCard AND date BETWEEN :dateInit AND :dateEnd")
     suspend fun getLineUseCardByDate(idCard: Long, dateInit: Long, dateEnd: Long): Float
 
-    @Query("SELECT COALESCE(SUM(CASE WHEN quotas > 1 THEN debt/quotas ELSE debt END), 0) AS total_debt FROM debt_wallet_table WHERE id_wallet = :idCard AND is_paid = 0")
+    @Query("SELECT COALESCE(SUM(debt), 0) AS total_debt FROM debt_wallet_table WHERE id_wallet = :idCard AND is_paid = 0")
     suspend fun getLineUseCard(idCard: Long): Float
 
     @Query("UPDATE debt_wallet_table SET quote_paid = :quotePaid, is_paid = :isPaid WHERE id = :id")

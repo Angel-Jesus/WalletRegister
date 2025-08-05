@@ -1,6 +1,7 @@
 package angel.panduro.dev.walletregister.presentation.ui.navigation
 
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY
+import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_ID
 import kotlinx.serialization.Serializable
 
 sealed class ItemNavScreen {

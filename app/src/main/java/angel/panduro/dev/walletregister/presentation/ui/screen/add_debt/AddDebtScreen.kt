@@ -1,5 +1,6 @@
 package angel.panduro.dev.walletregister.presentation.ui.screen.add_debt
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,7 +19,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.add_debt.AddDebtEffect
 import angel.panduro.dev.walletregister.presentation.contract.add_debt.AddDebtEvent
@@ -34,12 +35,13 @@ import angel.panduro.dev.walletregister.presentation.ui.component.WalletDropDown
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletInput
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBarColor
-import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.TitleTopAppBarStyle
 import angel.panduro.dev.walletregister.presentation.ui.utils.constance.WarningMessage
 import angel.panduro.dev.walletregister.presentation.ui.utils.enums.CategoriesEnum
 import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DebtDropDownEnum
 import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DebtInputEnum
+import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.formatNumber
+import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.toSafeFloat
 import angel.panduro.dev.walletregister.presentation.viewmodel.AddDebtViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,8 +54,15 @@ fun AddDebtScreen(
     onBack: () -> Unit
 ){
     val scope = rememberCoroutineScope()
-    val uiState by addDebtViewModel.uiState.collectAsState()
+
+    val accountState by addDebtViewModel.accountState.collectAsStateWithLifecycle()
+    val amountState by addDebtViewModel.amountState.collectAsStateWithLifecycle()
+    val quoteState by addDebtViewModel.quoteState.collectAsStateWithLifecycle()
+    val categoryState by addDebtViewModel.categoryState.collectAsStateWithLifecycle()
+
     val snackbarHostState = remember { SnackbarHostState() }
+
+    BackHandler { onBack() }
 
     LaunchedEffect(Unit) {
         addDebtViewModel.onEvent(AddDebtEvent.GetAllCards)
@@ -84,8 +93,8 @@ fun AddDebtScreen(
                 WalletDropDown(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.acount_list_add_debt),
-                    data = uiState.cardAccounts.map { DropDownParameters(icon = R.drawable.icon_wallet, text = it.nameCard, color = Color(it.colorCard)) },
-                    value = DropDownParameters(icon = R.drawable.icon_wallet.takeIf { uiState.account.isNotEmpty() }, text = uiState.account, color = uiState.accountColor),
+                    data = accountState.cards.map { DropDownParameters(icon = R.drawable.icon_wallet, text = it.nameCard, color = Color(it.colorCard)) },
+                    value = DropDownParameters(icon = R.drawable.icon_wallet.takeIf { accountState.nameCard.isNotEmpty() }, text = accountState.nameCard, color = Color(accountState.colorCard)),
                     valueSelected = { account ->
                         addDebtViewModel.onEvent(AddDebtEvent.UpdateDropDownValue(account, DebtDropDownEnum.ACCOUNT))
                     }
@@ -96,7 +105,9 @@ fun AddDebtScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.amount_add_debt),
-                    text = uiState.amount,
+                    text = amountState,
+                    isError = accountState.amountAvailable < amountState.toSafeFloat(),
+                    errorMessage = "Monto maxima permitido: ${accountState.amountAvailable.formatNumber()}",
                     valueChanged = { amount ->
                         addDebtViewModel.onEvent(AddDebtEvent.UpdateInputValue(amount, DebtInputEnum.AMOUNT))
                     },
@@ -108,7 +119,7 @@ fun AddDebtScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.quote_add_debt),
-                    text = uiState.quote,
+                    text = quoteState,
                     valueChanged = { quote ->
                         addDebtViewModel.onEvent(AddDebtEvent.UpdateInputValue(quote, DebtInputEnum.QUOTE))
                     },
@@ -121,7 +132,7 @@ fun AddDebtScreen(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.category_add_debt),
                     data = CategoriesEnum.options.map { DropDownParameters(icon = it.icon, text = it.description, color = it.color) },
-                    value = DropDownParameters(icon = CategoriesEnum.getIconByDescription(uiState.category), text = uiState.category, color = CategoriesEnum.getColorByDescription(uiState.category)),
+                    value = DropDownParameters(icon = CategoriesEnum.getIconByDescription(categoryState), text = categoryState, color = CategoriesEnum.getColorByDescription(categoryState)),
                     valueSelected = { category ->
                         addDebtViewModel.onEvent(AddDebtEvent.UpdateDropDownValue(category, DebtDropDownEnum.CATEGORY))
                     }

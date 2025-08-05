@@ -9,6 +9,7 @@ import angel.panduro.dev.walletregister.presentation.contract.card_section.CardS
 import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEvent
 import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionUiState
 import angel.panduro.dev.walletregister.presentation.ui.model.CardInformation
+import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY
 import angel.panduro.dev.walletregister.presentation.ui.utils.enums.CardInformationEnum
 import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.toSafeInt
 import kotlinx.serialization.json.Json
@@ -16,6 +17,36 @@ import kotlinx.serialization.json.Json
 class CardSectionViewModel(
     private val saveCreditCardUseCase: SaveCreditCardSafeUseCase
 ): BaseViewModel<CardSectionUiState, CardSectionEvent, CardSectionEffect>(CardSectionUiState()) {
+
+    val creditCardName = createDerivedState(
+        transform = { it.creditCardName },
+        initialValue = String.EMPTY
+    )
+
+    val creditLineValue = createDerivedState(
+        transform = { it.creditLineValue },
+        initialValue = String.EMPTY
+    )
+
+    val moneyType = createDerivedState(
+        transform = { it.moneyType },
+        initialValue = String.EMPTY
+    )
+
+    val paymentDueDay = createDerivedState(
+        transform = { it.paymentDueDay },
+        initialValue = String.EMPTY
+    )
+
+    val closingDay = createDerivedState(
+        transform = { it.closingDay },
+        initialValue = String.EMPTY
+    )
+
+    val colorCard = createDerivedState(
+        transform = { it.colorCard },
+        initialValue = 0UL
+    )
 
     override fun onEvent(event: CardSectionEvent) {
         when(event){

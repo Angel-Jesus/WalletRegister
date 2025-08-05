@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEffect
 import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEvent
@@ -34,12 +35,11 @@ import angel.panduro.dev.walletregister.presentation.contract.card_section.CardS
 import angel.panduro.dev.walletregister.presentation.contract.card_section.CardSectionEvent.SaveCard
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletDropDownColor
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletInput
-import angel.panduro.dev.walletregister.presentation.ui.utils.enums.CardInformationEnum
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
 import angel.panduro.dev.walletregister.presentation.ui.theme.GreenTopBarColor
-import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.TitleTopAppBarStyle
 import angel.panduro.dev.walletregister.presentation.ui.utils.constance.WarningMessage
+import angel.panduro.dev.walletregister.presentation.ui.utils.enums.CardInformationEnum
 import angel.panduro.dev.walletregister.presentation.viewmodel.CardSectionViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,7 +52,13 @@ fun CardSectionScreen(
     onBack: () -> Unit
 ){
     val scope = rememberCoroutineScope()
-    val uiState by cardSectionViewModel.uiState.collectAsState()
+    val creditName by cardSectionViewModel.creditCardName.collectAsStateWithLifecycle()
+    val creditLine by cardSectionViewModel.creditLineValue.collectAsStateWithLifecycle()
+    val moneyType by cardSectionViewModel.moneyType.collectAsStateWithLifecycle()
+    val paymentDueDay by cardSectionViewModel.paymentDueDay.collectAsStateWithLifecycle()
+    val closingDay by cardSectionViewModel.closingDay.collectAsStateWithLifecycle()
+    val colorCard by cardSectionViewModel.colorCard.collectAsStateWithLifecycle()
+
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -84,7 +90,7 @@ fun CardSectionScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.credit_crd_name),
-                    text = uiState.creditCardName,
+                    text = creditName,
                     valueChanged = {
                         cardSectionViewModel.onEvent(InputChanged(CardInformationEnum.CREDIT_CARD_NAME, it))
                     },
@@ -95,7 +101,7 @@ fun CardSectionScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.credit_line_value),
-                    text = uiState.creditLineValue,
+                    text = creditLine,
                     valueChanged = {
                         cardSectionViewModel.onEvent(InputChanged(CardInformationEnum.CREDIT_LINE_VALUE, it))
                     },
@@ -107,7 +113,7 @@ fun CardSectionScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.money_type),
-                    text = uiState.moneyType,
+                    text = moneyType,
                     valueChanged = {
                         cardSectionViewModel.onEvent(InputChanged(CardInformationEnum.MONEY_TYPE, it))
                     },
@@ -118,7 +124,7 @@ fun CardSectionScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.payment_due_date),
-                    text = uiState.paymentDueDay,
+                    text = paymentDueDay,
                     valueChanged = {
                         cardSectionViewModel.onEvent(InputChanged(CardInformationEnum.PAYMENT_DUE_DATE, it))
                     },
@@ -130,7 +136,7 @@ fun CardSectionScreen(
                 WalletInput(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.closing_date),
-                    text = uiState.closingDay,
+                    text = closingDay,
                     valueChanged = {
                         cardSectionViewModel.onEvent(InputChanged(CardInformationEnum.CLOSING_DATE, it))
                     },
@@ -142,7 +148,7 @@ fun CardSectionScreen(
                 WalletDropDownColor(
                     modifier = Modifier.fillMaxWidth().padding(8.dp),
                     label = stringResource(R.string.credit_card_color),
-                    color = uiState.colorCard,
+                    color = colorCard,
                     colorClick = {
                         cardSectionViewModel.onEvent(ColorChanged(it))
                     },

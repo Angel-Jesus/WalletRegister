@@ -8,11 +8,15 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -45,6 +49,16 @@ abstract class BaseViewModel<S: BaseUiState, E: BaseEvent, F: BaseEffect>(
                 it.newState()
             }
         }
+    }
+
+    protected fun <T> createDerivedState(
+        transform: (S) -> T,
+        initialValue: T
+    ): StateFlow<T> {
+        return uiState
+            .map(transform)
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), initialValue)
     }
 
     // Execute UseCase

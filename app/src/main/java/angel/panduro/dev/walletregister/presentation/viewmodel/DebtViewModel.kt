@@ -2,6 +2,7 @@ package angel.panduro.dev.walletregister.presentation.viewmodel
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Stable
 import angel.panduro.dev.walletregister.core.base.ui.BaseViewModel
 import angel.panduro.dev.walletregister.core.base.ui.EmptyEffect
 import angel.panduro.dev.walletregister.domain.usecases.DeleteDebtUseCase
@@ -12,6 +13,8 @@ import angel.panduro.dev.walletregister.domain.usecases.UpdateDebtQuoteUseCase
 import angel.panduro.dev.walletregister.presentation.contract.debt.DebtEvent
 import angel.panduro.dev.walletregister.presentation.contract.debt.DebtUiState
 import angel.panduro.dev.walletregister.presentation.ui.mapper.toUi
+import angel.panduro.dev.walletregister.presentation.ui.model.CategoryInformation
+import angel.panduro.dev.walletregister.presentation.ui.model.DebtInformation
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_ID
 import kotlinx.coroutines.Job
 
@@ -22,6 +25,21 @@ class DebtViewModel(
     private val deleteDebtUseCase: DeleteDebtUseCase,
     private val paidOneQuoteDebtUseCase: UpdateDebtQuoteUseCase
 ): BaseViewModel<DebtUiState, DebtEvent, EmptyEffect>(DebtUiState()) {
+
+    val cardState = createDerivedState(
+        transform = { CardState(it.idCardSelected) },
+        initialValue = CardState()
+    )
+
+    val debtsState = createDerivedState(
+        transform = { DebtsState(it.totalDebtByType, it.debtNotPaid, it.debtPaid) },
+        initialValue = DebtsState()
+    )
+
+    val modalState = createDerivedState(
+        transform = { ModalState(it.showOptionModal, it.temporalDebt) },
+        initialValue = ModalState()
+    )
 
     private var getDebtsJob: Job? = null
 
@@ -114,5 +132,21 @@ class DebtViewModel(
             }
         )
     }
+
+    @Stable
+    data class CardState(val idCardSelected: Long = Long.EMPTY_ID)
+
+    @Stable
+    data class DebtsState(
+        val totalDebtByType: Map<String, CategoryInformation> = emptyMap(),
+        val debtNotPaid: List<DebtInformation> = emptyList(),
+        val debtPaid: List<DebtInformation> = emptyList()
+    )
+
+    @Stable
+    data class ModalState(
+        val showModal: Boolean = false,
+        val temporalDebt: Pair<Boolean, Long> = Pair(false, Long.EMPTY_ID)
+    )
 
 }

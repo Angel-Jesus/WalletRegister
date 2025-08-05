@@ -1,10 +1,12 @@
 package angel.panduro.dev.walletregister.presentation.viewmodel
 
+import androidx.compose.runtime.Stable
+import androidx.compose.ui.util.fastFirstOrNull
 import angel.panduro.dev.walletregister.core.base.ui.BaseViewModel
 import angel.panduro.dev.walletregister.domain.usecases.DeleteCardUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetAllCardsFlowUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetBalanceWalletUseCase
-import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineCardUseCase
+import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineCardUsedUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetIdCardByPreferenceUseCase
 import angel.panduro.dev.walletregister.domain.usecases.SaveIdCardByPreferencesUseCase
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect
@@ -12,12 +14,13 @@ import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect.*
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeUiState
 import angel.panduro.dev.walletregister.presentation.ui.mapper.toUi
+import angel.panduro.dev.walletregister.presentation.ui.model.CardInformation
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_ID
 import kotlinx.coroutines.Job
 import kotlinx.serialization.json.Json
 
 class HomeViewModel(
-    private val getCreditLineCardUsedUseCase: GetCreditLineCardUseCase,
+    private val getCreditLineCardUsedUseCase: GetCreditLineCardUsedUseCase,
     private val getBalanceWalletUseCase: GetBalanceWalletUseCase,
     private val getAllCardsUseCase: GetAllCardsFlowUseCase,
     private val deleteCardUseCase: DeleteCardUseCase,
@@ -25,6 +28,29 @@ class HomeViewModel(
     private val saveIdCardByPreferencesUseCase: SaveIdCardByPreferencesUseCase
 ): BaseViewModel<HomeUiState, HomeEvent, HomeEffect>(HomeUiState()) {
 
+    val cardsState = createDerivedState(
+        transform = { CardsState(it.cards, it.idCardSelected) },
+        initialValue = CardsState()
+    )
+
+    val balanceState = createDerivedState(
+        transform = { state ->
+            state.cards.fastFirstOrNull { it.id == state.idCardSelected }?.let { card ->
+                BalanceState(card, state.creditLineUsed)
+            }
+        },
+        initialValue = null
+    )
+
+    val debtsState = createDerivedState(
+        transform = { it.totalDebtByType },
+        initialValue = emptyMap()
+    )
+
+    val modalState = createDerivedState(
+        transform = { ModalState(it.showModal, it.temporalIdCard) },
+        initialValue = ModalState()
+    )
     private var getCardJob: Job? = null
 
     override fun onEvent(event: HomeEvent) {
@@ -64,7 +90,7 @@ class HomeViewModel(
 
         executeUseCase(
             useCase = getCreditLineCardUsedUseCase,
-            params = GetCreditLineCardUseCase.Params(cardId),
+            params = GetCreditLineCardUsedUseCase.Params(cardId),
             onResult = {creditLineUsed ->
                 updateState {
                     copy(creditLineUsed = creditLineUsed)
@@ -134,4 +160,22 @@ class HomeViewModel(
             }
         )
     }
+
+    @Stable
+    data class CardsState(
+        val cards: List<CardInformation> = emptyList(),
+        val idCardSelected: Long = Long.EMPTY_ID
+    )
+
+    @Stable
+    data class BalanceState(
+        val card: CardInformation,
+        val creditLineUsed: Float
+    )
+
+    @Stable
+    data class ModalState(
+        val showModal: Boolean = false,
+        val temporalIdCard: Long = Long.EMPTY_ID
+    )
 }

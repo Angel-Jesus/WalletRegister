@@ -1,5 +1,6 @@
 package angel.panduro.dev.walletregister.presentation.ui.screen.home
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -30,15 +31,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.home.HomeEffect
-import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.*
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.ChangeCardSelected
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.DeleteCard
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.EditCard
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.GetAllCards
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.GetCreditLineUsed
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.GetDebtResume
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.HideModal
+import angel.panduro.dev.walletregister.presentation.contract.home.HomeEvent.ShowModal
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletModal
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletPieChart
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletTopAppBar
@@ -52,7 +62,6 @@ import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleLargeStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleRegularStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.SubtitleSmallStyle
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY
-import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_ID
 import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.formatNumber
 import angel.panduro.dev.walletregister.presentation.viewmodel.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -65,7 +74,11 @@ fun HomeScreen(
     onSettingCard: (String) -> Unit
 ){
     val sheetState = rememberModalBottomSheetState()
-    val uiState by homeViewModel.uiState.collectAsState()
+
+    val cardsState by homeViewModel.cardsState.collectAsStateWithLifecycle()
+    val balanceState by homeViewModel.balanceState.collectAsStateWithLifecycle()
+    val debtsState by homeViewModel.debtsState.collectAsStateWithLifecycle()
+    val modalState by homeViewModel.modalState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         homeViewModel.onEvent(GetAllCards)
@@ -73,36 +86,33 @@ fun HomeScreen(
         homeViewModel.uiEffect.collect{ effect ->
             when(effect){
                 is HomeEffect.GetAllInformationByCard -> {
-                    homeViewModel.onEvent(GetCreditLineUsed(uiState.idCardSelected))
-                    homeViewModel.onEvent(GetDebtResume(uiState.idCardSelected))
+                    homeViewModel.onEvent(GetCreditLineUsed(cardsState.idCardSelected))
+                    homeViewModel.onEvent(GetDebtResume(cardsState.idCardSelected))
                 }
-
                 is HomeEffect.OnSettingCard -> onSettingCard(effect.cardInformationJson)
             }
         }
     }
-    if(uiState.showModal){
+
+    Log.d("Compose", "recomposition")
+
+    if (modalState.showModal) {
         WalletModal(
             sheetState = sheetState,
             title = stringResource(R.string.setting_card_title),
             description = stringResource(R.string.question_setting_card),
             textPositive = stringResource(R.string.edit_card_button),
             textNegative = stringResource(R.string.delete_card_button),
-            onPositiveClick = {
-                homeViewModel.onEvent(EditCard(uiState.temporalIdCard))
-            },
-            onNegativeClick = {
-                homeViewModel.onEvent(DeleteCard(uiState.temporalIdCard))
-            },
+            onPositiveClick = { homeViewModel.onEvent(EditCard(modalState.temporalIdCard)) },
+            onNegativeClick = { homeViewModel.onEvent(DeleteCard(modalState.temporalIdCard)) },
             onDismiss = { homeViewModel.onEvent(HideModal) }
         )
     }
 
-
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
+            Log.d("Compose", "recomposition TopAppBar")
             WalletTopAppBar(
                 titleTopBar = stringResource(R.string.home_title_top_bar),
                 onDisplayDrawer = onDisplayDrawer
@@ -119,28 +129,24 @@ fun HomeScreen(
             item {
                 CardsSection(
                     modifier = Modifier.fillMaxWidth(),
-                    cards = uiState.cards,
-                    idCardSelected = uiState.idCardSelected,
-                    onCardSelected = { idCard ->  homeViewModel.onEvent(ChangeCardSelected(idCard))},
+                    cards = cardsState.cards,
+                    idCardSelected = cardsState.idCardSelected,
+                    onCardSelected = { idCard -> homeViewModel.onEvent(ChangeCardSelected(idCard)) },
                     onCardLongClick = { idCard -> homeViewModel.onEvent(ShowModal(idCard)) },
                     onAddCard = { onSettingCard(String.EMPTY) }
                 )
             }
 
-            if(uiState.idCardSelected != Long.EMPTY_ID){
-                item {
-                    CurrentBalanceCard(
-                        card = uiState.cards.first { it.id == uiState.idCardSelected },
-                        creditLineUsed = uiState.creditLineUsed
-                    )
-                }
+
+            item {
+                CurrentBalanceCard(balance = balanceState)
             }
 
-            if(uiState.totalDebtByType.isNotEmpty()){
-                item {
-                    DebtsSection(debts = uiState.totalDebtByType)
-                }
+
+            item {
+                DebtsSection(debts = debtsState)
             }
+
         }
     }
 }
@@ -233,10 +239,11 @@ private fun CardsSection(
 @Composable
 private fun CurrentBalanceCard(
     modifier: Modifier = Modifier,
-    card: CardInformation,
-    creditLineUsed: Float
+    balance: HomeViewModel.BalanceState?,
 ){
-    val creditLineAvailable = card.creditLineCard.toFloat() - creditLineUsed
+    if(balance == null) return
+
+    val creditLineAvailable = balance.card.creditLineCard.toFloat() - balance.creditLineUsed
 
     Card(
         modifier = modifier
@@ -257,7 +264,7 @@ private fun CurrentBalanceCard(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = card.nameCard,
+                text = balance.card.nameCard,
                 style = SubtitleLargeStyle,
                 color = Color.White,
                 textAlign = TextAlign.Center
@@ -270,8 +277,8 @@ private fun CurrentBalanceCard(
                     .height(12.dp)
                     .fillMaxWidth()
                     .padding(start = 18.dp, end = 18.dp),
-                progress = { (creditLineUsed / card.creditLineCard.toFloat()) },
-                color = Color(card.colorCard),
+                progress = { (balance.creditLineUsed / balance.card.creditLineCard.toFloat()) },
+                color = Color(balance.card.colorCard),
                 trackColor = Color.LightGray
             )
 
@@ -283,7 +290,7 @@ private fun CurrentBalanceCard(
             ){
                 Column {
                     Text(
-                        text = card.typeMoney + " " + creditLineUsed.formatNumber(),
+                        text = balance.card.typeMoney + " " + balance.creditLineUsed.formatNumber(),
                         style = SubtitleRegularStyle,
                         color = Color.White
                     )
@@ -299,7 +306,7 @@ private fun CurrentBalanceCard(
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = card.typeMoney + " " + creditLineAvailable.formatNumber(),
+                        text = balance.card.typeMoney + " " + creditLineAvailable.formatNumber(),
                         style = SubtitleRegularStyle,
                         color = Color.White,
                         textAlign = TextAlign.End
@@ -323,6 +330,8 @@ private fun DebtsSection(
     modifier: Modifier = Modifier,
     debts: Map<String, CategoryInformation>
 ){
+    if(debts.isEmpty()) return
+
     Card(
         modifier = modifier
             .fillMaxWidth()

@@ -4,9 +4,9 @@ import angel.panduro.dev.walletregister.core.base.usecase.BaseUseCase
 import angel.panduro.dev.walletregister.domain.repository.WalletDebtRepository
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_DATE
 
-class GetCreditLineCardUseCase(
+class GetCreditLineCardUsedUseCase(
     private val walletDebtRepository: WalletDebtRepository
-): BaseUseCase<GetCreditLineCardUseCase.Params, Float>() {
+): BaseUseCase<GetCreditLineCardUsedUseCase.Params, Float>() {
     data class Params(
         val idCard: Long,
         val initDate: Long = Long.EMPTY_DATE,

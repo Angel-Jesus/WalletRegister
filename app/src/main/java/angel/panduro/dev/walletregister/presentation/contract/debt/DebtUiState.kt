@@ -7,6 +7,7 @@ import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_I
 
 data class DebtUiState(
     val idCardSelected: Long = Long.EMPTY_ID,
+    val creditLineAvailable: Float = 0f,
     val debtNotPaid: List<DebtInformation> = emptyList(),
     val debtPaid: List<DebtInformation> = emptyList(),
     val totalDebtByType: Map<String, CategoryInformation> = emptyMap(),

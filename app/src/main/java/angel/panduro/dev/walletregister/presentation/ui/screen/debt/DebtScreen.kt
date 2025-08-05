@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import angel.panduro.dev.walletregister.R
 import angel.panduro.dev.walletregister.presentation.contract.debt.DebtEvent
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletEmptyState
@@ -45,7 +47,6 @@ import angel.panduro.dev.walletregister.presentation.ui.component.WalletModal
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletPieChart
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletTab
 import angel.panduro.dev.walletregister.presentation.ui.component.WalletTopAppBar
-import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DebtTapOptionEnum
 import angel.panduro.dev.walletregister.presentation.ui.model.CategoryInformation
 import angel.panduro.dev.walletregister.presentation.ui.model.DebtInformation
 import angel.panduro.dev.walletregister.presentation.ui.theme.ContainerDarkColor
@@ -57,9 +58,9 @@ import angel.panduro.dev.walletregister.presentation.ui.theme.TitleStyle
 import angel.panduro.dev.walletregister.presentation.ui.theme.WalletIconColor
 import angel.panduro.dev.walletregister.presentation.ui.utils.companions.EMPTY_ID
 import angel.panduro.dev.walletregister.presentation.ui.utils.enums.CategoriesEnum.Companion.getCategoriesByDescription
+import angel.panduro.dev.walletregister.presentation.ui.utils.enums.DebtTapOptionEnum
 import angel.panduro.dev.walletregister.presentation.ui.utils.extensions.formatNumber
 import angel.panduro.dev.walletregister.presentation.viewmodel.DebtViewModel
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -70,36 +71,25 @@ fun DebtScreen(
     onAddDebt: (Long) -> Unit,
     onDisplayDrawer: () -> Unit
 ){
-    val uiState by debtViewModel.uiState.collectAsState()
-    val debtsTab = DebtTapOptionEnum.sectionsTitle
     val scope = rememberCoroutineScope()
-    val sheetState = rememberModalBottomSheetState()
+    val debtsTab = DebtTapOptionEnum.sectionsTitle
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { debtsTab.size })
+
+    val cardState by debtViewModel.cardState.collectAsStateWithLifecycle()
+    val debtsState by debtViewModel.debtsState.collectAsStateWithLifecycle()
+    val modalState by debtViewModel.modalState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         debtViewModel.onEvent(DebtEvent.GetDebtAllInformation)
     }
 
-    if(uiState.showOptionModal){
-        WalletModal(
-            modifier = Modifier.fillMaxWidth(),
-            sheetState = sheetState,
-            icon = R.drawable.card,
-            title = stringResource(R.string.title_option_debt_paid_modal).takeIf { uiState.temporalDebt.first } ?: stringResource(R.string.title_option_debt_modal),
-            description = stringResource(R.string.description_debt_paid_option_modal).takeIf { uiState.temporalDebt.first } ?: stringResource(R.string.description_debt_option_modal),
-            textPositive = stringResource(R.string.text_delete_option_modal).takeIf { uiState.temporalDebt.first } ?: stringResource(R.string.text_paid_option_modal),
-            textNegative = stringResource(R.string.text_delete_option_modal).takeIf { !uiState.temporalDebt.first },
-            onPositiveClick = {
-                if(uiState.temporalDebt.first){
-                    debtViewModel.onEvent(DebtEvent.DeleteDebt)
-                } else {
-                   debtViewModel.onEvent(DebtEvent.PaidOneQuoteDebt)
-                }
-            },
-            onNegativeClick = { debtViewModel.onEvent(DebtEvent.DeleteDebt) },
-            onDismiss = { debtViewModel.onEvent(DebtEvent.HideQuestionModal) }
-        )
-    }
+    ModalDebtSection(
+        showModal = modalState.showModal,
+        isPaid = modalState.temporalDebt.first,
+        onDeleteDebt = { debtViewModel.onEvent(DebtEvent.DeleteDebt) },
+        onPaidQuote = { debtViewModel.onEvent(DebtEvent.PaidOneQuoteDebt) },
+        onDismissModal = { debtViewModel.onEvent(DebtEvent.HideQuestionModal) }
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -112,8 +102,8 @@ fun DebtScreen(
         floatingActionButton = {
             FABWallet(
                 modifier = Modifier.padding(bottom = 16.dp, end = 8.dp),
-                onAddDebt = { onAddDebt(uiState.idCardSelected) },
-                enabled = uiState.idCardSelected != Long.EMPTY_ID
+                onAddDebt = { onAddDebt(cardState.idCardSelected) },
+                enabled = cardState.idCardSelected != Long.EMPTY_ID
             )
         },
         containerColor = ContainerDarkColor
@@ -127,15 +117,15 @@ fun DebtScreen(
             when(DebtTapOptionEnum.sections[page]){
                 DebtTapOptionEnum.DEBT_NOT_PAID -> DebtNotPaidContent(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
-                    debts = uiState.debtNotPaid,
-                    debtResume = uiState.totalDebtByType,
+                    debts = debtsState.debtNotPaid,
+                    debtResume = debtsState.totalDebtByType,
                     onClick = { idDebt ->
                         debtViewModel.onEvent(DebtEvent.ShowQuestionModal(idDebt, false))
                     }
                 )
                 DebtTapOptionEnum.DEBT_PAID -> DebtPaidContent(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
-                    debtsPaid = uiState.debtPaid,
+                    debtsPaid = debtsState.debtPaid,
                     onClick = { idDebt ->
                         debtViewModel.onEvent(DebtEvent.ShowQuestionModal(idDebt, true))
                     }
@@ -143,6 +133,74 @@ fun DebtScreen(
             }
         }
     }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun ModalDebtSection(
+    showModal: Boolean,
+    isPaid: Boolean,
+    onDeleteDebt: () -> Unit,
+    onPaidQuote: () -> Unit,
+    onDismissModal: () -> Unit
+) {
+    if (showModal && isPaid) {
+        PaidDebtModal(
+            onDeleteDebt = onDeleteDebt,
+            onDismiss = onDismissModal
+        )
+    }
+
+    if (showModal && !isPaid) {
+        UnpaidDebtModal(
+            onPaidQuote = onPaidQuote,
+            onDeleteDebt = onDeleteDebt,
+            onDismiss = onDismissModal
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PaidDebtModal(
+    onDeleteDebt: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    WalletModal(
+        modifier = Modifier.fillMaxWidth(),
+        sheetState = sheetState,
+        icon = R.drawable.card,
+        title = stringResource(R.string.title_option_debt_paid_modal),
+        description = stringResource(R.string.description_debt_paid_option_modal),
+        textPositive = stringResource(R.string.text_delete_option_modal),
+        onPositiveClick = onDeleteDebt,
+        onDismiss = onDismiss
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun UnpaidDebtModal(
+    onPaidQuote: () -> Unit,
+    onDeleteDebt: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    WalletModal(
+        modifier = Modifier.fillMaxWidth(),
+        sheetState = sheetState,
+        icon = R.drawable.card,
+        title = stringResource(R.string.title_option_debt_modal),
+        description = stringResource(R.string.description_debt_option_modal),
+        textPositive = stringResource(R.string.text_paid_option_modal),
+        textNegative = stringResource(R.string.text_delete_option_modal),
+        onPositiveClick = onPaidQuote,
+        onNegativeClick = onDeleteDebt,
+        onDismiss = onDismiss
+    )
 }
 
 @Composable

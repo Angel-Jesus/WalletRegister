@@ -6,7 +6,8 @@ import angel.panduro.dev.walletregister.domain.usecases.GetAllCardsFlowUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetAllCardsUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetAllDebtByIdCardUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetBalanceWalletUseCase
-import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineCardUseCase
+import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineAvailableByCardsUseCase
+import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineCardUsedUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetIdCardByPreferenceUseCase
 import angel.panduro.dev.walletregister.domain.usecases.SaveCreditCardSafeUseCase
 import angel.panduro.dev.walletregister.domain.usecases.SaveDebtUseCase
@@ -21,11 +22,12 @@ val useCaseModule = module {
     factoryOf(::GetAllCardsFlowUseCase)
     factoryOf(::GetAllDebtByIdCardUseCase)
     factoryOf(::GetBalanceWalletUseCase)
-    factoryOf(::GetCreditLineCardUseCase)
+    factoryOf(::GetCreditLineCardUsedUseCase)
     factoryOf(::GetIdCardByPreferenceUseCase)
     factoryOf(::SaveCreditCardSafeUseCase)
     factoryOf(::SaveIdCardByPreferencesUseCase)
     factoryOf(::UpdateDebtQuoteUseCase)
     factoryOf(::GetAllCardsUseCase)
     factoryOf(::SaveDebtUseCase)
+    factoryOf(::GetCreditLineAvailableByCardsUseCase)
 }
