@@ -9,6 +9,7 @@ import angel.panduro.dev.walletregister.domain.usecases.GetBalanceWalletUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineAvailableByCardsUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetCreditLineCardUsedUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetIdCardByPreferenceUseCase
+import angel.panduro.dev.walletregister.domain.usecases.NotificationSectionUseCase
 import angel.panduro.dev.walletregister.domain.usecases.SaveCreditCardSafeUseCase
 import angel.panduro.dev.walletregister.domain.usecases.SaveDebtUseCase
 import angel.panduro.dev.walletregister.domain.usecases.SaveIdCardByPreferencesUseCase
@@ -30,4 +31,5 @@ val useCaseModule = module {
     factoryOf(::GetAllCardsUseCase)
     factoryOf(::SaveDebtUseCase)
     factoryOf(::GetCreditLineAvailableByCardsUseCase)
+    factoryOf(::NotificationSectionUseCase)
 }

@@ -94,8 +94,6 @@ fun HomeScreen(
         }
     }
 
-    Log.d("Compose", "recomposition")
-
     if (modalState.showModal) {
         WalletModal(
             sheetState = sheetState,
@@ -112,7 +110,6 @@ fun HomeScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            Log.d("Compose", "recomposition TopAppBar")
             WalletTopAppBar(
                 titleTopBar = stringResource(R.string.home_title_top_bar),
                 onDisplayDrawer = onDisplayDrawer

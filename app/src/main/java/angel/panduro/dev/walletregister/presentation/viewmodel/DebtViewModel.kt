@@ -5,10 +5,12 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Stable
 import angel.panduro.dev.walletregister.core.base.ui.BaseViewModel
 import angel.panduro.dev.walletregister.core.base.ui.EmptyEffect
+import angel.panduro.dev.walletregister.domain.model.DebtInformationModel
 import angel.panduro.dev.walletregister.domain.usecases.DeleteDebtUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetAllDebtByIdCardUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetBalanceWalletUseCase
 import angel.panduro.dev.walletregister.domain.usecases.GetIdCardByPreferenceUseCase
+import angel.panduro.dev.walletregister.domain.usecases.NotificationSectionUseCase
 import angel.panduro.dev.walletregister.domain.usecases.UpdateDebtQuoteUseCase
 import angel.panduro.dev.walletregister.presentation.contract.debt.DebtEvent
 import angel.panduro.dev.walletregister.presentation.contract.debt.DebtUiState
@@ -23,7 +25,8 @@ class DebtViewModel(
     private val getBalanceWalletUseCase: GetBalanceWalletUseCase,
     private val getAllDebtByIdCardUseCase: GetAllDebtByIdCardUseCase,
     private val deleteDebtUseCase: DeleteDebtUseCase,
-    private val paidOneQuoteDebtUseCase: UpdateDebtQuoteUseCase
+    private val paidOneQuoteDebtUseCase: UpdateDebtQuoteUseCase,
+    private val notificationSectionUseCase: NotificationSectionUseCase
 ): BaseViewModel<DebtUiState, DebtEvent, EmptyEffect>(DebtUiState()) {
 
     val cardState = createDerivedState(
@@ -105,10 +108,12 @@ class DebtViewModel(
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getAllDebtByCard(idCard: Long){
         getDebtsJob?.cancel()
-        executeJobUseCase(
+        getDebtsJob = executeJobUseCase(
             useCase = getAllDebtByIdCardUseCase,
             params = GetAllDebtByIdCardUseCase.Params(idCard),
             onResult = { debtInformation ->
+                notificationSection(debtInformation)
+
                 val debtNotPaid = debtInformation.filter {data -> data.isPaid == 0 }
                 val debtPaid = debtInformation.filter { data -> data.isPaid == 1 }
                 updateState {
@@ -118,6 +123,13 @@ class DebtViewModel(
                     )
                 }
             }
+        )
+    }
+
+    private fun notificationSection(debts: List<DebtInformationModel>){
+        executeUseCase(
+            useCase = notificationSectionUseCase,
+            params = NotificationSectionUseCase.Params(cardState.value.idCardSelected, debts)
         )
     }
 
